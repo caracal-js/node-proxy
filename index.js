@@ -90,7 +90,6 @@ module.exports = function proxy(config = defaultConfig){
                 })
             ).end(requestData.body);
         } catch(error) {
-            console.log(error);
             config.error({ 
                 clientRequest,
                 clientResponse,
