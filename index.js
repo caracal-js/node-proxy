@@ -2,10 +2,12 @@ var http = require('http'),
     https = require('https'),
     zlib = require('zlib'),
     defaultConfig = {
-        url: URL.prototype || '' || Function.prototype,
-        requestHandler(data){},
-        responseHandler(data){},
-        errorHandler(data){
+        url(clientRequest){
+            throw 'Not URL handler was provided.';
+        },
+        request(data){},
+        response(data){},
+        error(data){
             data.clientResponse.end(data.error.toString());
         },
     };
@@ -24,7 +26,7 @@ module.exports = function proxy(config = defaultConfig){
 
             delete requestData.headers['host'];
 
-            config.requestHandler(requestData);
+            config.request(requestData);
 
             if (clientResponse.writableEnded) return;
 
@@ -66,23 +68,29 @@ module.exports = function proxy(config = defaultConfig){
                         delete this.headers['content-encoding'];
                         delete this.headers['content-length'];
                     },
+                    removePolicies(){
+                        delete this.headers['x-frame-options'];
+                        delete this.headers['content-security-policy'];
+                        delete this.headers['content-security-policy-report-only'];
+                        delete this.header['strict-transport-security'];
+                    },
                 };
 
-                config.responseHandler(remoteData);
+                config.response(remoteData);
 
                 if (clientResponse.writableEnded) return;
 
                 clientResponse.writeHead(remoteResponse.statusCode, remoteData.headers)
                 clientResponse.end(remoteData.body);
             }).on('error', error => 
-                config.errorHandler({ 
+                config.error({ 
                     clientRequest,
                     clientResponse,
                     error,
                 })
             ).end(requestData.body);
         } catch(error) {
-            config.errorHandler({ 
+            config.error({ 
                 clientRequest,
                 clientResponse,
                 error,
