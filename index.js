@@ -1,5 +1,6 @@
 var http = require('http'),
     https = require('https'),
+    zlib = require('zlib'),
     defaultConfig = {
         url: URL.prototype || '' || Function.prototype,
         requestHandler(data){},
@@ -42,6 +43,29 @@ module.exports = function proxy(config = defaultConfig){
                     clientRequest,
                     clientResponse,
                     remoteResponse,
+                    removeCompression(){
+                        switch((this.headers['content-encoding'] || null)){
+                            case 'gzip':
+                                this.body = zlib.gunzipSync(this.body, { 
+                                    flush: zlib.constants.Z_SYNC_FLUSH, 
+                                    finishFlush: zlib.constants.Z_SYNC_FLUSH,
+                                });
+                                break;
+                            case 'deflate':
+                                this.body = zlib.inflateSync(body, { 
+                                    flush: zlib.constants.Z_SYNC_FLUSH, 
+                                    finishFlush: zlib.constants.Z_SYNC_FLUSH,
+                                });
+                                break;
+                            case 'br':
+                                this.body =zlib.brotliDecompressSync(this.body, { 
+                                    flush: zlib.constants.Z_SYNC_FLUSH, 
+                                    finishFlush: zlib.constants.Z_SYNC_FLUSH,
+                                });
+                        };
+                        delete this.headers['content-encoding'];
+                        delete this.headers['content-length'];
+                    },
                 };
 
                 config.responseHandler(remoteData);
