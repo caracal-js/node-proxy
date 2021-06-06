@@ -3,7 +3,7 @@ var http = require('http'),
     zlib = require('zlib'),
     defaultConfig = {
         url(clientRequest){
-            throw 'Not URL handler was provided.';
+            throw 'No URL handler was provided.';
         },
         request(data){},
         response(data){},
@@ -17,7 +17,7 @@ module.exports = function proxy(config = defaultConfig){
     return async function(clientRequest = http.IncomingMessage.prototype, clientResponse = http.ServerResponse.prototype){
         try { 
             var requestData = {
-                    url: typeof config.url == 'function' ? new URL(config.url(clientRequest)) : new URL(config.url),
+                    url: new URL(config.url(clientRequest)),
                     headers: { ...clientRequest.headers },
                     body: await getChunks(clientRequest),
                     clientRequest,
@@ -72,7 +72,7 @@ module.exports = function proxy(config = defaultConfig){
                         delete this.headers['x-frame-options'];
                         delete this.headers['content-security-policy'];
                         delete this.headers['content-security-policy-report-only'];
-                        delete this.header['strict-transport-security'];
+                        delete this.headers['strict-transport-security'];
                     },
                 };
 
@@ -90,6 +90,7 @@ module.exports = function proxy(config = defaultConfig){
                 })
             ).end(requestData.body);
         } catch(error) {
+            console.log(error);
             config.error({ 
                 clientRequest,
                 clientResponse,
