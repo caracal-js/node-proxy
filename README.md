@@ -44,5 +44,10 @@ http.createServer((req, res) => proxy({
         data.remoteResponse; // HTTP Remote Response object.
         data.removeCompression(); // Removes Content-Encoding compression & Content-Length response header.
         data.removePolicies(); // Removes X-Frame-Options, Content-Security-Policy, Content-Security-Policy-Report-Only, and Strict-Transport-Security response headers.
+    }, // Error handler.
+    error(data){
+        data.clientRequest; // HTTP Client Request object.
+        data.clientResponse; // HTTP Client Response object.
+        data.error; // Error object.
     },
 }
