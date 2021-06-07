@@ -38,7 +38,7 @@ http.createServer((req, res) => proxy({
     response(data){
         data.url; // URL instance.
         data.headers; // Headers received from response.
-        data.body; // Request body, returns null if none.
+        data.body; // Response body, returns null if none.
         data.clientRequest; // HTTP Client Request object.
         data.clientResponse; // HTTP Client Response object.
         data.remoteResponse; // HTTP Remote Response object.
