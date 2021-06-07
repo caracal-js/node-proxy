@@ -25,7 +25,7 @@ http.createServer((req, res) => proxy({
 
 ```javascript
 {
-    url(clientRequest){ // URL handler. Returns URL used in the request. Throws error if left blank.
+    url(clientRequest){ // URL handler. Returns URL used in the request.
         return 'https://example.org' + clientRequest.url;
     },
     request(data){ // Remote request handler. 
