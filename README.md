@@ -20,3 +20,19 @@ http.createServer((req, res) => proxy({
     },
 })(req, res)).listen(8080);
 ```
+
+## API:
+
+```javascript
+{
+    url(clientRequest){
+        return 'https://example.org' + clientRequest.url;
+    },
+    request(data){
+        data.url; // URL instance.
+        data.headers; // Headers sent in request.
+        data.body; // Request body, returns null if none.
+        data.clientRequest; HTTP Request object.
+        data.clientResponse; HTTP Response object.
+    },
+}
