@@ -8,7 +8,7 @@ var http = require('http'),
         request(data){},
         response(data){},
         error(data){
-            data.clientResponse.end(data.error.toString());
+            data.clientResponse.end(data.error);
         },
     };
 
